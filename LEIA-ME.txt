@@ -1,0 +1,19 @@
+COMO USAR — LANCHONETE CAXORRO QUENTE
+
+1) Abra index.html no navegador (Chrome/Edge/Safari).
+2) Para editar produtos, nome, telefone e chave PIX: abra admin.html.
+3) No admin, edite os itens, salve e depois abra/index.html novamente.
+4) O site já envia pedido direto para o WhatsApp configurado.
+
+PARA USAR NO CELULAR / VENDER PARA QUALQUER LOJA:
+- Copie a pasta delivery-site para uma hospedagem grátis (GitHub Pages, Netlify, Vercel).
+- Ou abra diretamente no celular pelo arquivo (funciona, mas melhor subir pro ar).
+- Para outra lanchonete: mexa só no admin.html para trocar nome, preço, foto.
+
+O QUE ESTÁ INCLUÍDO (tudo que pediu):
+- Cardápio digital com fotos
+- Carrinho de pedidos
+- Checkout com dados e observação
+- Pagamento via PIX (chave configurável) ou entrega
+- Pedido automático pelo WhatsApp com mensagem completa
+- Área do dono para editar sem saber código

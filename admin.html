@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Área do Dono — Lanchonete</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@700&display=swap');
+  :root { --bg:#0b1220; --surface:#1e293b; --text:#f8fafc; --text-sub:#94a3b8; --accent:#f59e0b; --radius:14px; }
+  * { margin:0;padding:0;box-sizing:border-box; }
+  body { font-family:'Inter',system-ui,sans-serif; background:linear-gradient(180deg,#0b1220 0%,#0f172a 100%); color:var(--text); min-height:100vh; }
+  header { background:rgba(15,23,42,0.9); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.06); padding:20px; text-align:center; }
+  header h1 { font-family:'Playfair Display',serif; font-size:1.6rem; background:linear-gradient(135deg,#f59e0b,#ef4444); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  header p { color:var(--text-sub); font-size:0.85rem; margin-top:4px; }
+  .container { max-width:720px; margin:0 auto; padding:20px; }
+  .card { background:var(--surface); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius); padding:16px; margin-bottom:14px; }
+  h2 { font-family:'Playfair Display',serif; font-size:1.1rem; margin-bottom:10px; }
+  label { display:block; font-size:0.78rem; color:var(--text-sub); margin-bottom:4px; font-weight:500; }
+  input, textarea, select { width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.12); background:var(--bg); color:var(--text); font-size:0.9rem; margin-bottom:8px; outline:none; }
+  input:focus, textarea:focus, select:focus { border-color:var(--accent); }
+  .btn { width:100%; padding:12px; border:none; border-radius:10px; font-weight:800; cursor:pointer; transition:transform .1s; }
+  .btn-primary { background:linear-gradient(135deg,var(--accent),#ef4444); color:#fff; box-shadow:0 8px 20px rgba(245,158,11,0.3); }
+  .btn-secondary { background:rgba(255,255,255,0.08); color:var(--text); border:1px solid rgba(255,255,255,0.1); }
+  .btn:active { transform:scale(0.98); }
+  .items { margin-top:12px; }
+  .item-row { display:grid; grid-template-columns:1fr 1.2fr 70px 80px 30px; gap:8px; align-items:center; margin-bottom:8px; font-size:0.78rem; }
+  .item-row input { margin:0; font-size:0.75rem; padding:6px 8px; }
+  .item-row button { background:#ef4444; color:#fff; border:none; border-radius:6px; cursor:pointer; padding:6px; font-weight:700; }
+  .notice { font-size:0.7rem; color:var(--text-sub); text-align:center; margin-top:8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Área do Dono</h1>
+  <p>Edite a lanchonete sem mexer no código • Salva no seu navegador</p>
+</header>
+
+<main class="container">
+
+  <div class="card">
+    <h2>Configurações da Lanchonete</h2>
+    <label for="storeName">Nome da lanchonete</label>
+    <input type="text" id="storeName" placeholder="Ex: Lanchonete Caxorro Quente" />
+    <label for="storePhone">Telefone para WhatsApp (mensagem)</label>
+    <input type="text" id="storePhone" placeholder="5511999999999" />
+    <label for="storePix">Chave PIX (copiada no checkout)</label>
+    <input type="text" id="storePix" placeholder="cpf@email.com ou chave aleatória" />
+    <button class="btn btn-secondary" onclick="saveConfig()">Salvar configurações</button>
+    <p class="notice">Use apenas números no telefone, ex: 551199999999 (com DDD)</p>
+  </div>
+
+  <div class="card">
+    <h2>Produtos do Cardápio</h2>
+    <p style="font-size:0.8rem;color:var(--text-sub);margin-bottom:8px;">Os itens aparecem automaticamente no site. Use imagens do Unsplash (link direto).</p>
+    <div id="itemsContainer" class="items"></div>
+    <button class="btn btn-secondary" onclick="addItem()">+ Adicionar novo item</button>
+  </div>
+
+  <div class="card" style="text-align:center;">
+    <a href="index.html" style="display:inline-block;padding:12px 24px;background:var(--accent);color:#0f172a;border-radius:10px;font-weight:800;text-decoration:none;">Ver site do cliente →</a>
+    <p class="notice" style="margin-top:8px;">Ao salvar, o site principal já atualiza automaticamente.</p>
+  </div>
+</main>
+
+<script>
+  // Padrão d lanchonete (caxorro quente)
+  const defaultProducts = [
+    { id:101, name:"Dog Completo", desc:"Pão bisnaguinha, salsicha, queijo, batata palha, milho, ketchup e maionese.", price:18.9, img:"https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=600&q=80", cat:"Principal" },
+    { id:102, name:"Dog Mega Bacon", desc:"Dog completo + bacon crocante + queijo cheddar extra.", price:23.9, img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80", cat:"Principal" },
+    { id:103, name:"Dog Veggie", desc:"Salsicha vegana, queijo, batata palha, molho de mostarda.", price:19.5, img:"https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=600&q=80", cat:"Principal" },
+    { id:104, name:"Batata Frita P", desc:"Porção pequena, sal grosso, ketchup à vontade.", price:12.9, img:"https://images.unsplash.com/photo-1630384060428-cb04fb4e43d7?auto=format&fit=crop&w=600&q=80", cat:"Acompanhamento" },
+    { id:105, name:"Batata Frita G + Cheddar", desc:"Grande com queijo cheddar derretido por cima.", price:21.0, img:"https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=600&q=80", cat:"Acompanhamento" },
+    { id:106, name:"Refrigerante 350ml", desc:"Coca, Guaraná, Fanta — escolha na entrega.", price:7.0, img:"https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=600&q=80", cat:"Bebida" },
+    { id:107, name:"Suco de Laranja 500ml", desc:"Natural, sem açúcar adicionado.", price:9.5, img:"https://images.unsplash.com/photo-1613478223719-2d1295b5f7f1?auto=format&fit=crop&w=600&q=80", cat:"Bebida" },
+  ];
+
+  function loadData() {
+    const saved = localStorage.getItem('deliveryData');
+    let data = saved ? JSON.parse(saved) : null;
+    if (!data) data = { storeName:"Lanchonete Caxorro Quente", storePhone:"551199999999", storePix:"", products: defaultProducts };
+    document.getElementById('storeName').value = data.storeName || "";
+    document.getElementById('storePhone').value = data.storePhone || "";
+    document.getElementById('storePix').value = data.storePix || "";
+    renderItems(data.products || []);
+  }
+
+  function renderItems(list) {
+    const container = document.getElementById('itemsContainer');
+    container.innerHTML = list.map((p, idx) => `
+      <div class="item-row" data-idx="${idx}">
+        <input type="text" value="${p.name}" placeholder="Nome" onchange="updateItem(${idx},'name',this.value)" />
+        <input type="text" value="${p.desc}" placeholder="Descrição" onchange="updateItem(${idx},'desc',this.value)" />
+        <input type="number" step="0.1" value="${p.price}" placeholder="Preço" onchange="updateItem(${idx},'price',parseFloat(this.value||0))" />
+        <input type="text" value="${p.img}" placeholder="URL da imagem" onchange="updateItem(${idx},'img',this.value)" />
+        <button onclick="deleteItem(${idx})" title="Remover">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function updateItem(idx, field, value) {
+    const saved = JSON.parse(localStorage.getItem('deliveryData') || '{}');
+    const list = saved.products || defaultProducts;
+    if (!list[idx]) return;
+    list[idx][field] = value;
+    saved.products = list;
+    localStorage.setItem('deliveryData', JSON.stringify(saved));
+  }
+
+  function addItem() {
+    const saved = JSON.parse(localStorage.getItem('deliveryData') || '{}');
+    const list = saved.products || defaultProducts;
+    list.push({ id: Date.now(), name:"Novo item", desc:"Descrição", price:0, img:"https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=600&q=80", cat:"Principal" });
+    saved.products = list;
+    localStorage.setItem('deliveryData', JSON.stringify(saved));
+    renderItems(list);
+  }
+
+  function deleteItem(idx) {
+    const saved = JSON.parse(localStorage.getItem('deliveryData') || '{}');
+    const list = (saved.products || defaultProducts).filter((_,i) => i !== idx);
+    saved.products = list;
+    localStorage.setItem('deliveryData', JSON.stringify(saved));
+    renderItems(list);
+  }
+
+  function saveConfig() {
+    const saved = JSON.parse(localStorage.getItem('deliveryData') || '{}');
+    saved.storeName = document.getElementById('storeName').value;
+    saved.storePhone = document.getElementById('storePhone').value;
+    saved.storePix = document.getElementById('storePix').value;
+    localStorage.setItem('deliveryData', JSON.stringify(saved));
+    alert("Configurações salvas! Abra index.html para ver o site atualizado.");
+  }
+
+  loadData();
+</script>
+
+</body>
+</html>
