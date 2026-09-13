@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
@@ -66,20 +66,20 @@
 <script>
   // Padrão d lanchonete (caxorro quente)
   const defaultProducts = [
-    { id:101, name:"Cachorro Quente Simples", desc:"1 salsicha, queijo, milho, batata palha, ketchup, maionese.", price:10.0, img:"cachorro_simples.png", cat:"principais" },
-    { id:102, name:"Cachorro Quente Especial", desc:"2 salsichas, queijo, purê de batata, milho, batata palha, ketchup, maionese.", price:15.0, img:"cachorro_especial.png", cat:"principais" },
-    { id:103, name:"Cachorro Quente X Tudo", desc:"3 salsichas, frango desfiado, purê de batata, queijo, milho, batata palha, ketchup, maionese.", price:20.0, img:"cachorro_x_tudo.png", cat:"principais" },
-    { id:104, name:"Macarrão na Chapa Pequeno", desc:"Sabor Pernil ou Frango. Ingredientes adicionais: bacon, linguiça calabresa, cebola, cebolinha, ovo, queijo, milho.", price:22.0, img:"macarrao_chapa.png", cat:"principais" },
-    { id:105, name:"Macarrão na Chapa Grande", desc:"Sabor Pernil ou Frango. Ingredientes adicionais: bacon, linguiça calabresa, cebola, cebolinha, ovo, queijo, milho.", price:24.0, img:"macarrao_chapa.png", cat:"principais" },
-    { id:106, name:"Porção de Pernil Pequena", desc:"Acompanha cebola.", price:28.0, img:"porcao_pernil.png", cat:"acompanha" },
-    { id:107, name:"Porção de Pernil Grande", desc:"Acompanha cebola.", price:39.0, img:"porcao_pernil.png", cat:"acompanha" },
-    { id:108, name:"Porção de Fígado com Jiló Pequena", desc:"Acompanha cebola.", price:28.0, img:"porcao_figado.png", cat:"acompanha" },
-    { id:109, name:"Porção de Fígado com Jiló Grande", desc:"Acompanha cebola.", price:39.0, img:"porcao_figado.png", cat:"acompanha" },
+    { id:101, name:"Cachorro Quente Simples", desc:"1 salsicha, queijo, milho, batata palha, ketchup, maionese.", price:10.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/cachorro_simples.png", cat:"principais" },
+    { id:102, name:"Cachorro Quente Especial", desc:"2 salsichas, queijo, purê de batata, milho, batata palha, ketchup, maionese.", price:15.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/cachorro_especial.png", cat:"principais" },
+    { id:103, name:"Cachorro Quente X Tudo", desc:"3 salsichas, frango desfiado, purê de batata, queijo, milho, batata palha, ketchup, maionese.", price:20.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/cachorro_x_tudo.png", cat:"principais" },
+    { id:104, name:"Macarrão na Chapa Pequeno", desc:"Sabor Pernil ou Frango. Ingredientes adicionais: bacon, linguiça calabresa, cebola, cebolinha, ovo, queijo, milho.", price:22.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/macarrao_chapa.png", cat:"principais" },
+    { id:105, name:"Macarrão na Chapa Grande", desc:"Sabor Pernil ou Frango. Ingredientes adicionais: bacon, linguiça calabresa, cebola, cebolinha, ovo, queijo, milho.", price:24.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/macarrao_chapa.png", cat:"principais" },
+    { id:106, name:"Porção de Pernil Pequena", desc:"Acompanha cebola.", price:28.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/porcao_pernil.png", cat:"acompanha" },
+    { id:107, name:"Porção de Pernil Grande", desc:"Acompanha cebola.", price:39.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/porcao_pernil.png", cat:"acompanha" },
+    { id:108, name:"Porção de Fígado com Jiló Pequena", desc:"Acompanha cebola.", price:28.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/porcao_figado.png", cat:"acompanha" },
+    { id:109, name:"Porção de Fígado com Jiló Grande", desc:"Acompanha cebola.", price:39.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/porcao_figado.png", cat:"acompanha" },
     { id:110, name:"Refrigerante 350ml", desc:"Coca, Guaraná, Fanta — escolha na entrega.", price:7.0, img:"", cat:"bebidas" },
   ];
 
   // Descarta dados salvos de versões antigas para o cardápio/fotos novos valerem
-  const DATA_VERSION = 'delivery_v2';
+  const DATA_VERSION = 'delivery_v3';
   if (localStorage.getItem('__delivery_ver') !== DATA_VERSION) {
     localStorage.removeItem('deliveryData');
     localStorage.setItem('__delivery_ver', DATA_VERSION);
