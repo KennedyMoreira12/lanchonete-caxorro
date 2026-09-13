@@ -26,14 +26,28 @@
   .item-row { display:grid; grid-template-columns:1fr 1.2fr 70px 1fr 90px 30px; gap:8px; align-items:center; margin-bottom:8px; font-size:0.78rem; }
   .item-row input { margin:0; font-size:0.75rem; padding:6px 8px; }
   .item-row button { background:#ef4444; color:#fff; border:none; border-radius:6px; cursor:pointer; padding:6px; font-weight:700; }
+  .imgcell { display:flex; flex-direction:column; gap:4px; align-items:flex-start; }
+  .imgcell img { width:56px; height:56px; object-fit:cover; border-radius:8px; display:block; }
   .notice { font-size:0.7rem; color:var(--text-sub); text-align:center; margin-top:8px; }
 </style>
 </head>
 <body>
 
+<div id="loginScreen" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:999;background:#0b1220;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="width:100%;max-width:340px;background:var(--surface);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;">
+    <h2 style="text-align:center;">🔒 Área do Dono</h2>
+    <p style="color:var(--text-sub);font-size:0.8rem;text-align:center;margin-bottom:14px;">Digite a senha para acessar</p>
+    <label>Senha de acesso</label>
+    <input type="password" id="passInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPass()" style="text-align:center;letter-spacing:3px;font-size:1.1rem;" />
+    <button class="btn btn-primary" onclick="checkPass()">Entrar</button>
+    <p id="passMsg" style="color:#f87171;font-size:0.8rem;text-align:center;margin-top:10px;display:none;">Senha incorreta. Tente de novo.</p>
+  </div>
+</div>
+
 <header>
   <h1>Área do Dono</h1>
   <p>Edite a lanchonete sem mexer no código • Salva no seu navegador</p>
+  <p id="logoutBar" style="display:none;margin-top:8px;font-size:0.8rem;"><a href="#" onclick="logout()" style="color:#f87171;text-decoration:underline;">🔒 Sair da área do dono</a></p>
 </header>
 
 <main class="container">
@@ -52,7 +66,7 @@
 
   <div class="card">
     <h2>Produtos do Cardápio</h2>
-    <p style="font-size:0.75rem;color:var(--text-sub);margin-bottom:8px;"><strong>Como trocar foto:</strong> copie a foto para esta mesma pasta (<code>delivery-site</code>) e digite só o nome (ex: <code>cachorro_simples.png</code>). Não precisa ser link, só o nome do arquivo.</p>
+    <p style="font-size:0.75rem;color:var(--text-sub);margin-bottom:8px;"><strong>Como trocar foto:</strong> clique em <strong>Escolher arquivo</strong> no item e a foto já fica salva no navegador. Ou cole um link/URL de imagem nesta mesma linha.</p>
     <div id="itemsContainer" class="items"></div>
     <button class="btn btn-secondary" onclick="addItem()">+ Adicionar novo item</button>
   </div>
@@ -60,6 +74,14 @@
   <div class="card" style="text-align:center;">
     <a href="index.html" style="display:inline-block;padding:12px 24px;background:var(--accent);color:#0f172a;border-radius:10px;font-weight:800;text-decoration:none;">Ver site do cliente →</a>
     <p class="notice" style="margin-top:8px;">Ao salvar, o site principal já atualiza automaticamente.</p>
+  </div>
+
+  <div class="card">
+    <h2>Segurança</h2>
+    <label for="newPass">Trocar senha de acesso</label>
+    <input type="password" id="newPass" placeholder="Nova senha (mínimo 4 caracteres)" />
+    <button class="btn btn-secondary" onclick="changePass()">Trocar senha</button>
+    <p class="notice">Senha inicial: <b>dani2026</b>. Dica: só troque com este card visível, no navegador que você usa.</p>
   </div>
 </main>
 
@@ -76,6 +98,9 @@
     { id:108, name:"Porção de Fígado com Jiló Pequena", desc:"Acompanha cebola.", price:28.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/porcao_figado.png", cat:"acompanha" },
     { id:109, name:"Porção de Fígado com Jiló Grande", desc:"Acompanha cebola.", price:39.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/porcao_figado.png", cat:"acompanha" },
     { id:110, name:"Refrigerante 350ml", desc:"Coca, Guaraná, Fanta — escolha na entrega.", price:7.0, img:"", cat:"bebidas" },
+    { id:111, name:"Refrigerante 200ml", desc:"Coca, Guaraná, Fanta — escolha na entrega.", price:3.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/refrigerante_200.jpg", cat:"bebidas" },
+    { id:112, name:"Brahma Latão", desc:"Cerveja em lata 473ml, bem gelada.", price:8.0, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/latao.jpg", cat:"bebidas" },
+    { id:113, name:"Litrinho", desc:"Cerveja 1L, bem gelada.", price:5.5, img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/litrinho.jpg", cat:"bebidas" },
   ];
 
   // Descarta dados salvos de versões antigas para o cardápio/fotos novos valerem
@@ -97,20 +122,28 @@
 
   function renderItems(list) {
     const container = document.getElementById('itemsContainer');
-    container.innerHTML = list.map((p, idx) => `
+    container.innerHTML = list.map((p, idx) => {
+      const isData = (p.img||'').startsWith('data:');
+      const shown = isData ? (p.imgName || 'foto carregada') : p.img;
+      return `
       <div class="item-row" data-idx="${idx}">
         <input type="text" value="${p.name}" placeholder="Nome" onchange="updateItem(${idx},'name',this.value)" />
         <input type="text" value="${p.desc}" placeholder="Descrição" onchange="updateItem(${idx},'desc',this.value)" />
         <input type="number" step="0.1" value="${p.price}" placeholder="Preço" onchange="updateItem(${idx},'price',parseFloat(this.value||0))" />
-        <input type="text" value="${p.img}" placeholder="URL ou nome da imagem" onchange="updateItem(${idx},'img',this.value)" />
+        <div class="imgcell">
+          <input type="hidden" id="imgdata_${idx}" value="${isData ? p.img : ''}" />
+          <input type="text" id="imgtext_${idx}" value="${shown}" placeholder="URL/nome da imagem" onchange="onImgText(${idx},this)" />
+          <input type="file" accept="image/*" onchange="pickImg(${idx},this)" style="font-size:0.7rem;padding:3px;margin:0;" title="Escolher foto do computador" />
+          <img id="preview_${idx}" src="${p.img||''}" onerror="this.style.display='none'" />
+        </div>
         <select onchange="updateItem(${idx},'cat',this.value)">
           <option value="principais" ${p.cat==='principais'?'selected':''}>Principal</option>
           <option value="acompanha" ${p.cat==='acompanha'?'selected':''}>Acompanhamento</option>
           <option value="bebidas" ${p.cat==='bebidas'?'selected':''}>Bebida</option>
         </select>
         <button onclick="deleteItem(${idx})" title="Remover">✕</button>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
   }
 
   function updateItem(idx, field, value) {
@@ -148,7 +181,73 @@
     alert("Configurações salvas! Abra index.html para ver o site atualizado.");
   }
 
+  function onImgText(idx, inp) {
+    const dataEl = document.getElementById('imgdata_'+idx);
+    const v = inp.value.trim();
+    if (dataEl && dataEl.value) { updateItem(idx,'imgName', v); return; }
+    updateItem(idx,'img', v);
+  }
+
+  function pickImg(idx, input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const dataUrl = e.target.result;
+      const saved = JSON.parse(localStorage.getItem('deliveryData') || '{}');
+      const list = saved.products || defaultProducts;
+      if (!list[idx]) return;
+      list[idx].img = dataUrl;
+      list[idx].imgName = file.name;
+      saved.products = list;
+      try { localStorage.setItem('deliveryData', JSON.stringify(saved)); }
+      catch(err) { alert('Foto muito grande para salvar no navegador. Reduza e tente de novo.'); return; }
+      const prev = document.getElementById('preview_'+idx);
+      if (prev) { prev.src = dataUrl; prev.style.display='block'; }
+      const dEl = document.getElementById('imgdata_'+idx);
+      if (dEl) dEl.value = dataUrl;
+      const tEl = document.getElementById('imgtext_'+idx);
+      if (tEl) tEl.value = file.name;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  function getAdminHash() { return localStorage.getItem('adminHash') || '9fca88e4d5f4f6d781b40b71f7f7f3bad6d3ff9f5fce6cbf090c2e5f31ace7a8'; }
+
+  function checkPass() {
+    const v = document.getElementById('passInput').value;
+    if (!v) return;
+    const msg = document.getElementById('passMsg');
+    function okOrNot(ok) {
+      if (ok) { msg.style.display='none'; document.getElementById('passInput').value=''; sessionStorage.setItem('adminAuth','1'); enter(); }
+      else { msg.style.display='block'; document.getElementById('passInput').value=''; }
+    }
+    if (window.crypto && crypto.subtle) sha256(v).then(h => okOrNot(h === getAdminHash()));
+    else okOrNot(v === 'dani2026');
+  }
+
+  function enter() {
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('logoutBar').style.display='block';
+    loadData();
+  }
+
+  function logout() { sessionStorage.removeItem('adminAuth'); location.reload(); }
+
+  function changePass() {
+    const v = document.getElementById('newPass').value;
+    if (!v) return alert('Digite a nova senha.');
+    if (v.length < 4) return alert('Use pelo menos 4 caracteres.');
+    sha256(v).then(h => { localStorage.setItem('adminHash', h); alert('Senha trocada com sucesso!'); document.getElementById('newPass').value=''; });
+  }
+
   loadData();
+  if (sessionStorage.getItem('adminAuth') === '1') enter();
 </script>
 
 </body>

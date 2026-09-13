@@ -177,16 +177,6 @@
   <p style="font-size:0.8rem;color:var(--sub);margin-top:6px;"><strong>Rua Oitis 244 — Jardim Montanhês — Ibirité (Dani) — MG</strong> • <a href="https://www.google.com/maps/search/?api=1&query=Rua+Oitis+244,Ibirité,MG" target="_blank" style="color:var(--accent);">Abrir no Google Maps →</a></p>
 </section>
 
-<div id="editArea" style="max-width:720px;margin:0 auto;padding:20px;background:#fff;border-top:2px solid var(--accent);display:none;">
-  <h2 style="font-family:'Playfair Display',serif;font-size:1.2rem;">Área do Dono — Editar direto</h2>
-  <p style="font-size:0.85rem;color:var(--sub);margin-bottom:10px;">Para trocar a foto: use o botão <b>Escolher arquivo</b> ao lado do produto (a imagem já fica salva). Ou digite o nome de um arquivo copiado pra esta pasta (ex: <b>cachorro_simples.png</b>).</p>
-  <div id="editInputs"></div>
-  <button onclick="saveEdits()" style="margin-top:10px;width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ef4444);color:#fff;font-weight:800;cursor:pointer;">Salvar no site</button>
-  <button onclick="toggleEdit()" style="margin-top:8px;width:100%;padding:10px;border:none;background:#f0f0f0;color:var(--text);border-radius:10px;cursor:pointer;font-weight:600;">Fechar edição</button>
-</div>
-
-<button onclick="toggleEdit()" style="position:fixed;bottom:20px;right:20px;z-index:50;background:#1e293b;color:#fff;padding:10px 14px;border-radius:50px;font-weight:700;border:none;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,0.25);">✏️ Editar</button>
-
 <footer>
   <strong style="color:var(--text);font-size:1rem;">Lanchonete Cachorro Quente</strong><br>
   <span>Pedido digital • Entrega rápida • Aberto das 11h às 23h</span><br>
@@ -214,6 +204,9 @@
     ],
     'bebidas': [
       {id:110,name:"Refrigerante 350ml",desc:"Coca, Guaraná, Fanta — escolha na entrega.",price:7.0,img:""},
+      {id:111,name:"Refrigerante 200ml",desc:"Coca, Guaraná, Fanta — escolha na entrega.",price:3.0,img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/refrigerante_200.jpg"},
+      {id:112,name:"Brahma Latão",desc:"Cerveja em lata 473ml, bem gelada.",price:8.0,img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/latao.jpg"},
+      {id:113,name:"Litrinho",desc:"Cerveja 1L, bem gelada.",price:5.5,img:"https://raw.githubusercontent.com/KennedyMoreira12/lanchonete-caxorro/master/img/litrinho.jpg"},
     ],
   };
 
@@ -367,70 +360,6 @@
     orderCount++;
     localStorage.setItem('orderCount', String(orderCount));
     return orderCount;
-  }
-
-  function toggleEdit() { document.getElementById('editArea').style.display = document.getElementById('editArea').style.display === 'none' ? 'block' : 'none'; buildEditInputs(); }
-  function buildEditInputs() {
-    const all = [...(products.principais||[]), ...(products.acompanha||[]), ...(products.bebidas||[])];
-    document.getElementById('editInputs').innerHTML = all.map(p => {
-      const isData = (p.img||'').startsWith('data:');
-      return `
-      <div style="background:#f8fafc;border:1px solid #e4e4e7;border-radius:10px;padding:10px;margin-bottom:8px;">
-        <strong>${p.name}</strong> — R$ ${Number(p.price).toFixed(2)}<br>
-        <input id="edit_img_${p.id}" type="text" value="${isData ? (p.imgName||'imagem carregada no navegador') : p.img}" style="width:70%;padding:6px;border-radius:6px;border:1px solid #ccc;margin-top:4px;font-size:0.85rem;" placeholder="nome-do-arquivo.jpg" />
-        <input type="hidden" id="edit_data_${p.id}" value="${isData ? p.img : ''}" />
-        <input type="file" accept="image/*" style="width:28%;padding:4px;font-size:0.8rem;" onchange="handleFile(this,${p.id})" />
-        <img id="preview_${p.id}" src="${p.img||''}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;margin-top:6px;display:${p.img?'block':'none'};" onerror="this.style.display='none'" />
-      </div>`;
-    }).join('');
-  }
-  function saveEdits() {
-    const all = [...(products.principais||[]), ...(products.acompanha||[]), ...(products.bebidas||[])];
-    all.forEach(p => {
-      const dataEl = document.getElementById('edit_data_'+p.id);
-      const input = document.getElementById('edit_img_'+p.id);
-      if (dataEl && dataEl.value) {
-        p.img = dataEl.value;
-        p.imgName = input ? input.value.trim() : '';
-      } else if (input && input.value.trim()) {
-        p.img = input.value.trim();
-      }
-    });
-    const data = JSON.parse(localStorage.getItem('deliveryData')||'{}');
-    data.products = products;
-    localStorage.setItem('deliveryData', JSON.stringify(data));
-    alert('Salvo! Atualize a página para ver.');
-    renderList(); updateUI();
-  }
-
-  function handleFile(input, id) {
-    if (!input.files || !input.files[0]) return;
-    const file = input.files[0];
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const all = [...(products.principais||[]), ...(products.acompanha||[]), ...(products.bebidas||[])];
-      const item = all.find(x => x.id === id);
-      if (!item) return;
-      const dataUrl = e.target.result;
-      item.img = dataUrl;
-      item.imgName = file.name;
-      const nameEl = document.getElementById('edit_img_'+id);
-      if (nameEl) nameEl.value = file.name;
-      const dataEl = document.getElementById('edit_data_'+id);
-      if (dataEl) dataEl.value = dataUrl;
-      const preview = document.getElementById('preview_'+id);
-      if (preview) { preview.src = dataUrl; preview.style.display = 'block'; }
-      const data = JSON.parse(localStorage.getItem('deliveryData')||'{}');
-      data.products = products;
-      try {
-        localStorage.setItem('deliveryData', JSON.stringify(data));
-      } catch(err) {
-        alert('Foto muito grande para salvar no navegador. Reduza/tire uma foto menor e tente de novo.');
-        return;
-      }
-      renderList(); updateUI();
-    };
-    reader.readAsDataURL(file);
   }
 
   loadData();
