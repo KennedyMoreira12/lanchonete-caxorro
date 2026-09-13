@@ -371,8 +371,10 @@
     const all = [...(products.principais||[]), ...(products.acompanha||[]), ...(products.bebidas||[])];
     document.getElementById('editInputs').innerHTML = all.map(p => `
       <div style="background:#f8fafc;border:1px solid #e4e4e7;border-radius:10px;padding:10px;margin-bottom:8px;">
-        <strong>${p.name}</strong> — R$ ${Number(p.price).toFixed(2)}
-        <input id="edit_img_${p.id}" type="text" value="${p.img}" style="width:100%;padding:6px;border-radius:6px;border:1px solid #ccc;margin-top:4px;font-size:0.85rem;" placeholder="nome-do-arquivo.jpg" />
+        <strong>${p.name}</strong> — R$ ${Number(p.price).toFixed(2)}<br>
+        <input id="edit_img_${p.id}" type="text" value="${p.img}" style="width:70%;padding:6px;border-radius:6px;border:1px solid #ccc;margin-top:4px;font-size:0.85rem;" placeholder="nome-do-arquivo.jpg" />
+        <input type="file" accept="image/*" style="width:28%;padding:4px;font-size:0.8rem;" onchange="handleFile(this,${p.id})" />
+        <img id="preview_${p.id}" src="${p.img}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;margin-top:6px;display:${p.img?'block':'none'};" />
       </div>
     `).join('');
   }
@@ -387,6 +389,23 @@
     localStorage.setItem('deliveryData', JSON.stringify(data));
     alert('Salvo! Atualize a página para ver.');
     renderList(); updateUI();
+  }
+
+  function handleFile(input, id) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('edit_img_'+id).value = file.name;
+      const preview = document.getElementById('preview_'+id);
+      if (preview) { preview.src = e.target.result; preview.style.display = 'block'; }
+      // Atualiza visual imediatamente sem salvar no servidor
+      const all = [...(products.principais||[]), ...(products.acompanha||[]), ...(products.bebidas||[])];
+      const item = all.find(x => x.id === id);
+      if (item) item.img = file.name;
+      renderList(); updateUI();
+    };
+    reader.readAsDataURL(file);
   }
 
   loadData();
