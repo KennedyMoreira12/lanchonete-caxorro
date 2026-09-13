@@ -84,9 +84,9 @@
 
 <header>
   <div class="header-inner">
-    <div class="brand"><h1>Lanchonete Caxorro Quente</h1><span>Pedido Online • Aberto agora</span></div>
+    <div class="brand"><h1>Lanche da Dani</h1><span>Pedido Online • Aberto agora</span></div>
     <div style="display:flex;gap:8px;align-items:center;">
-      <a href="tel:+551199999999" style="display:inline-flex;align-items:center;gap:6px;background:#0b1220;color:#fff;padding:8px 14px;border-radius:50px;font-weight:700;font-size:0.8rem;text-decoration:none;box-shadow:0 4px 10px rgba(0,0,0,0.2);">📞 Ligar</a>
+      <a href="tel:+5531971681724" style="display:inline-flex;align-items:center;gap:6px;background:#0b1220;color:#fff;padding:8px 14px;border-radius:50px;font-weight:700;font-size:0.8rem;text-decoration:none;box-shadow:0 4px 10px rgba(0,0,0,0.2);">📞 Ligar</a>
       <button class="cart-btn" onclick="toggleDrawer()">Carrinho <span id="cartCount" class="cart-badge">0</span></button>
     </div>
   </div>
@@ -97,7 +97,7 @@
     <div style="padding:16px 20px;">
       <span id="openStatus" style="display:inline-block;background:#f59e0b;color:#fff;font-weight:700;font-size:0.75rem;padding:3px 10px;border-radius:20px;">Aberto agora</span>
       <h2 style="font-size:1.4rem;font-weight:700;margin-top:10px;">Lanchonete Caxorro Quente</h2>
-      <p style="color:var(--sub);font-size:0.85rem;">Rua Oitis 244 — Jardim Montanhês — Ibirité • Pedido rápido</p>
+      <p style="color:var(--sub);font-size:0.85rem;">Rua Oitis 244 — Jardim Montanhês — Ibirité (Dani) • Pedido rápido</p>
     </div>
   </div>
 
@@ -173,13 +173,13 @@
   <div style="border-radius:var(--radius);overflow:hidden;border:1px solid #e4e4e7;box-shadow:var(--shadow);">
     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3750!2d-43.8!3d-19.9!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0:0x0!2z!4!1i!4!2m3!2!1d0!2!1d0!3m2!1d-43.8!2d-19.9!4!3m2!2!1i1024!2i768!4f13.1" width="100%" height="220" style="border:0;" allowfullscreen="" loading="lazy" title="Mapa Google"></iframe>
   </div>
-  <p style="font-size:0.8rem;color:var(--sub);margin-top:6px;"><strong>Rua Oitis 244 — Jardim Montanhês — Ibirité — MG</strong> • <a href="https://www.google.com/maps/search/?api=1&query=Rua+Oitis+244,Ibirité,MG" target="_blank" style="color:var(--accent);">Abrir no Google Maps →</a></p>
+  <p style="font-size:0.8rem;color:var(--sub);margin-top:6px;"><strong>Rua Oitis 244 — Jardim Montanhês — Ibirité (Dani) — MG</strong> • <a href="https://www.google.com/maps/search/?api=1&query=Rua+Oitis+244,Ibirité,MG" target="_blank" style="color:var(--accent);">Abrir no Google Maps →</a></p>
 </section>
 
 <footer>
   <strong style="color:var(--text);font-size:1rem;">Lanchonete Caxorro Quente</strong><br>
   <span>Pedido digital • Entrega rápida • Aberto das 11h às 23h</span><br>
-  <a href="https://wa.me/551199999999" target="_blank">💬 WhatsApp</a> •
+  <a href="https://wa.me/5531971681724" target="_blank">💬 WhatsApp</a> •
   <a href="https://instagram.com" target="_blank">📸 Instagram</a> •
   <a href="https://maps.google.com" target="_blank">📍 Localização</a> •
   <a href="admin.html">Área do dono</a>
@@ -188,24 +188,27 @@
 <script>
   // Dados (podem ser editados pelo admin.html via localStorage)
   const defaultProducts = {
-    principais: [
-      {id:101,name:"Dog Completo",desc:"Pão, salsicha, queijo, batata palha, milho, ketchup, maionese.",price:18.9,img:"cardapio.jpg"},
-      {id:102,name:"Dog Mega Bacon",desc:"Dog completo + bacon crocante + cheddar extra.",price:23.9,img:"cardapio.jpg"},
-      {id:103,name:"Dog Veggie",desc:"Salsicha vegana, queijo, batata palha, mostarda.",price:19.5,img:"cardapio.jpg"},
+    'principais': [
+      {id:101,name:"Cachorro Quente Simples",desc:"1 salsicha, queijo, milho, batata palha, ketchup, maionese.",price:10.0,img:"cardapio.jpg"},
+      {id:102,name:"Cachorro Quente Especial",desc:"2 salsichas, queijo, purê de batata, milho, batata palha, ketchup, maionese.",price:15.0,img:"dog_01.jpg"},
+      {id:103,name:"Cachorro Quente X Tudo",desc:"3 salsichas, frango desfiado, purê de batata, queijo, milho, batata palha, ketchup, maionese.",price:20.0,img:"dog_02.jpg"},
+      {id:104,name:"Macarrão na Chapa Pequeno",desc:"Sabor Pernil ou Frango. Ingredientes adicionais: bacon, linguiça calabresa, cebola, cebolinha, ovo, queijo, milho.",price:22.0,img:"dog_03.jpg"},
+      {id:105,name:"Macarrão na Chapa Grande",desc:"Sabor Pernil ou Frango. Ingredientes adicionais: bacon, linguiça calabresa, cebola, cebolinha, ovo, queijo, milho.",price:24.0,img:"dog_04.jpg"},
     ],
-    acompanha: [
-      {id:104,name:"Batata Frita P",desc:"Porção pequena, sal grosso, ketchup.",price:12.9,img:"cardapio.jpg"},
-      {id:105,name:"Batata Frita G + Cheddar",desc:"Grande com cheddar derretido por cima.",price:21.0,img:"cardapio.jpg"},
+    'acompanha': [
+      {id:106,name:"Porção de Pernil Pequena",desc:"Acompanha cebola.",price:28.0,img:"dog_05.jpg"},
+      {id:107,name:"Porção de Pernil Grande",desc:"Acompanha cebola.",price:39.0,img:"dog_01.jpg"},
+      {id:108,name:"Porção de Fígado com Jiló Pequena",desc:"Acompanha cebola.",price:28.0,img:"dog_02.jpg"},
+      {id:109,name:"Porção de Fígado com Jiló Grande",desc:"Acompanha cebola.",price:39.0,img:"dog_03.jpg"},
     ],
-    bebidas: [
-      {id:106,name:"Refrigerante 350ml",desc:"Coca, Guaraná, Fanta — escolha na entrega.",price:7.0,img:"cardapio.jpg"},
-      {id:107,name:"Suco de Laranja 500ml",desc:"Natural, sem açúcar.",price:9.5,img:"cardapio.jpg"},
+    'bebidas': [
+      {id:110,name:"Refrigerante 350ml",desc:"Coca, Guaraná, Fanta — escolha na entrega.",price:7.0,img:"dog_04.jpg"},
     ],
   };
 
   let products = {};
   let cart = {};
-  let storeCfg = {name:"Lanchonete Caxorro Quente", phone:"551199999999", pix:""};
+  let storeCfg = {name:"Lanche da Dani", phone:"5531971681724", pix:""};
   let currentCat = 'todos';
 
   function loadData() {
