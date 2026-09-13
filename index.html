@@ -176,6 +176,16 @@
   <p style="font-size:0.8rem;color:var(--sub);margin-top:6px;"><strong>Rua Oitis 244 — Jardim Montanhês — Ibirité (Dani) — MG</strong> • <a href="https://www.google.com/maps/search/?api=1&query=Rua+Oitis+244,Ibirité,MG" target="_blank" style="color:var(--accent);">Abrir no Google Maps →</a></p>
 </section>
 
+<div id="editArea" style="max-width:720px;margin:0 auto;padding:20px;background:#fff;border-top:2px solid var(--accent);display:none;">
+  <h2 style="font-family:'Playfair Display',serif;font-size:1.2rem;">Área do Dono — Editar direto</h2>
+  <p style="font-size:0.85rem;color:var(--sub);margin-bottom:10px;">Digite o nome do arquivo de foto (ex: <b>dog_01.jpg</b>) e clique em Salvar. Copie a foto para esta pasta antes.</p>
+  <div id="editInputs"></div>
+  <button onclick="saveEdits()" style="margin-top:10px;width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ef4444);color:#fff;font-weight:800;cursor:pointer;">Salvar no site</button>
+  <button onclick="toggleEdit()" style="margin-top:8px;width:100%;padding:10px;border:none;background:#f0f0f0;color:var(--text);border-radius:10px;cursor:pointer;font-weight:600;">Fechar edição</button>
+</div>
+
+<button onclick="toggleEdit()" style="position:fixed;bottom:20px;right:20px;z-index:50;background:#1e293b;color:#fff;padding:10px 14px;border-radius:50px;font-weight:700;border:none;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,0.25);">✏️ Editar</button>
+
 <footer>
   <strong style="color:var(--text);font-size:1rem;">Lanchonete Caxorro Quente</strong><br>
   <span>Pedido digital • Entrega rápida • Aberto das 11h às 23h</span><br>
@@ -353,6 +363,29 @@
     orderCount++;
     localStorage.setItem('orderCount', String(orderCount));
     return orderCount;
+  }
+
+  function toggleEdit() { document.getElementById('editArea').style.display = document.getElementById('editArea').style.display === 'none' ? 'block' : 'none'; buildEditInputs(); }
+  function buildEditInputs() {
+    const all = [...(products.principais||[]), ...(products.acompanha||[]), ...(products.bebidas||[])];
+    document.getElementById('editInputs').innerHTML = all.map(p => `
+      <div style="background:#f8fafc;border:1px solid #e4e4e7;border-radius:10px;padding:10px;margin-bottom:8px;">
+        <strong>${p.name}</strong> — R$ ${Number(p.price).toFixed(2)}
+        <input id="edit_img_${p.id}" type="text" value="${p.img}" style="width:100%;padding:6px;border-radius:6px;border:1px solid #ccc;margin-top:4px;font-size:0.85rem;" placeholder="nome-do-arquivo.jpg" />
+      </div>
+    `).join('');
+  }
+  function saveEdits() {
+    const all = [...(products.principais||[]), ...(products.acompanha||[]), ...(products.bebidas||[])];
+    all.forEach(p => {
+      const input = document.getElementById('edit_img_'+p.id);
+      if (input) { p.img = input.value.trim() || p.img; }
+    });
+    const data = JSON.parse(localStorage.getItem('deliveryData')||'{}');
+    data.products = products;
+    localStorage.setItem('deliveryData', JSON.stringify(data));
+    alert('Salvo! Atualize a página para ver.');
+    renderList(); updateUI();
   }
 
   loadData();
