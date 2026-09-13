@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Área do Dono — Lanchonete</title>
+<title>Área do Dono — Lanche da Dani</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@700&display=swap');
   :root { --bg:#0b1220; --surface:#1e293b; --text:#f8fafc; --text-sub:#94a3b8; --accent:#f59e0b; --radius:14px; }
@@ -23,7 +23,7 @@
   .btn-secondary { background:rgba(255,255,255,0.08); color:var(--text); border:1px solid rgba(255,255,255,0.1); }
   .btn:active { transform:scale(0.98); }
   .items { margin-top:12px; }
-  .item-row { display:grid; grid-template-columns:1fr 1.2fr 70px 80px 30px; gap:8px; align-items:center; margin-bottom:8px; font-size:0.78rem; }
+  .item-row { display:grid; grid-template-columns:1fr 1.2fr 70px 1fr 90px 30px; gap:8px; align-items:center; margin-bottom:8px; font-size:0.78rem; }
   .item-row input { margin:0; font-size:0.75rem; padding:6px 8px; }
   .item-row button { background:#ef4444; color:#fff; border:none; border-radius:6px; cursor:pointer; padding:6px; font-weight:700; }
   .notice { font-size:0.7rem; color:var(--text-sub); text-align:center; margin-top:8px; }
@@ -41,7 +41,7 @@
   <div class="card">
     <h2>Configurações da Lanchonete</h2>
     <label for="storeName">Nome da lanchonete</label>
-    <input type="text" id="storeName" placeholder="Ex: Lanchonete Caxorro Quente" />
+    <input type="text" id="storeName" placeholder="Ex: Lanche da Dani" />
     <label for="storePhone">Telefone para WhatsApp (mensagem)</label>
     <input type="text" id="storePhone" placeholder="5511999999999" />
     <label for="storePix">Chave PIX (copiada no checkout)</label>
@@ -52,7 +52,7 @@
 
   <div class="card">
     <h2>Produtos do Cardápio</h2>
-    <p style="font-size:0.75rem;color:var(--text-sub);margin-bottom:8px;"><strong>Como trocar foto:</strong> copie a foto para esta mesma pasta (<code>delivery-site</code>) e digite só o nome (ex: <code>dog_01.jpg</code>). Não precisa ser link, só o nome do arquivo.</p>
+    <p style="font-size:0.75rem;color:var(--text-sub);margin-bottom:8px;"><strong>Como trocar foto:</strong> copie a foto para esta mesma pasta (<code>delivery-site</code>) e digite só o nome (ex: <code>cachorro_simples.png</code>). Não precisa ser link, só o nome do arquivo.</p>
     <div id="itemsContainer" class="items"></div>
     <button class="btn btn-secondary" onclick="addItem()">+ Adicionar novo item</button>
   </div>
@@ -66,19 +66,29 @@
 <script>
   // Padrão d lanchonete (caxorro quente)
   const defaultProducts = [
-    { id:101, name:"Dog Completo", desc:"Pão bisnaguinha, salsicha, queijo, batata palha, milho, ketchup e maionese.", price:18.9, img:"https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=600&q=80", cat:"Principal" },
-    { id:102, name:"Dog Mega Bacon", desc:"Dog completo + bacon crocante + queijo cheddar extra.", price:23.9, img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80", cat:"Principal" },
-    { id:103, name:"Dog Veggie", desc:"Salsicha vegana, queijo, batata palha, molho de mostarda.", price:19.5, img:"https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=600&q=80", cat:"Principal" },
-    { id:104, name:"Batata Frita P", desc:"Porção pequena, sal grosso, ketchup à vontade.", price:12.9, img:"https://images.unsplash.com/photo-1630384060428-cb04fb4e43d7?auto=format&fit=crop&w=600&q=80", cat:"Acompanhamento" },
-    { id:105, name:"Batata Frita G + Cheddar", desc:"Grande com queijo cheddar derretido por cima.", price:21.0, img:"https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=600&q=80", cat:"Acompanhamento" },
-    { id:106, name:"Refrigerante 350ml", desc:"Coca, Guaraná, Fanta — escolha na entrega.", price:7.0, img:"https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=600&q=80", cat:"Bebida" },
-    { id:107, name:"Suco de Laranja 500ml", desc:"Natural, sem açúcar adicionado.", price:9.5, img:"https://images.unsplash.com/photo-1613478223719-2d1295b5f7f1?auto=format&fit=crop&w=600&q=80", cat:"Bebida" },
+    { id:101, name:"Cachorro Quente Simples", desc:"1 salsicha, queijo, milho, batata palha, ketchup, maionese.", price:10.0, img:"cachorro_simples.png", cat:"principais" },
+    { id:102, name:"Cachorro Quente Especial", desc:"2 salsichas, queijo, purê de batata, milho, batata palha, ketchup, maionese.", price:15.0, img:"cachorro_especial.png", cat:"principais" },
+    { id:103, name:"Cachorro Quente X Tudo", desc:"3 salsichas, frango desfiado, purê de batata, queijo, milho, batata palha, ketchup, maionese.", price:20.0, img:"cachorro_x_tudo.png", cat:"principais" },
+    { id:104, name:"Macarrão na Chapa Pequeno", desc:"Sabor Pernil ou Frango. Ingredientes adicionais: bacon, linguiça calabresa, cebola, cebolinha, ovo, queijo, milho.", price:22.0, img:"macarrao_chapa.png", cat:"principais" },
+    { id:105, name:"Macarrão na Chapa Grande", desc:"Sabor Pernil ou Frango. Ingredientes adicionais: bacon, linguiça calabresa, cebola, cebolinha, ovo, queijo, milho.", price:24.0, img:"macarrao_chapa.png", cat:"principais" },
+    { id:106, name:"Porção de Pernil Pequena", desc:"Acompanha cebola.", price:28.0, img:"porcao_pernil.png", cat:"acompanha" },
+    { id:107, name:"Porção de Pernil Grande", desc:"Acompanha cebola.", price:39.0, img:"porcao_pernil.png", cat:"acompanha" },
+    { id:108, name:"Porção de Fígado com Jiló Pequena", desc:"Acompanha cebola.", price:28.0, img:"porcao_figado.png", cat:"acompanha" },
+    { id:109, name:"Porção de Fígado com Jiló Grande", desc:"Acompanha cebola.", price:39.0, img:"porcao_figado.png", cat:"acompanha" },
+    { id:110, name:"Refrigerante 350ml", desc:"Coca, Guaraná, Fanta — escolha na entrega.", price:7.0, img:"", cat:"bebidas" },
   ];
+
+  // Descarta dados salvos de versões antigas para o cardápio/fotos novos valerem
+  const DATA_VERSION = 'delivery_v2';
+  if (localStorage.getItem('__delivery_ver') !== DATA_VERSION) {
+    localStorage.removeItem('deliveryData');
+    localStorage.setItem('__delivery_ver', DATA_VERSION);
+  }
 
   function loadData() {
     const saved = localStorage.getItem('deliveryData');
     let data = saved ? JSON.parse(saved) : null;
-    if (!data) data = { storeName:"Lanchonete Caxorro Quente", storePhone:"551199999999", storePix:"", products: defaultProducts };
+    if (!data) data = { storeName:"Lanche da Dani", storePhone:"5531971681724", storePix:"", products: defaultProducts };
     document.getElementById('storeName').value = data.storeName || "";
     document.getElementById('storePhone').value = data.storePhone || "";
     document.getElementById('storePix').value = data.storePix || "";
@@ -92,7 +102,12 @@
         <input type="text" value="${p.name}" placeholder="Nome" onchange="updateItem(${idx},'name',this.value)" />
         <input type="text" value="${p.desc}" placeholder="Descrição" onchange="updateItem(${idx},'desc',this.value)" />
         <input type="number" step="0.1" value="${p.price}" placeholder="Preço" onchange="updateItem(${idx},'price',parseFloat(this.value||0))" />
-        <input type="text" value="${p.img}" placeholder="URL da imagem" onchange="updateItem(${idx},'img',this.value)" />
+        <input type="text" value="${p.img}" placeholder="URL ou nome da imagem" onchange="updateItem(${idx},'img',this.value)" />
+        <select onchange="updateItem(${idx},'cat',this.value)">
+          <option value="principais" ${p.cat==='principais'?'selected':''}>Principal</option>
+          <option value="acompanha" ${p.cat==='acompanha'?'selected':''}>Acompanhamento</option>
+          <option value="bebidas" ${p.cat==='bebidas'?'selected':''}>Bebida</option>
+        </select>
         <button onclick="deleteItem(${idx})" title="Remover">✕</button>
       </div>
     `).join('');
@@ -110,7 +125,7 @@
   function addItem() {
     const saved = JSON.parse(localStorage.getItem('deliveryData') || '{}');
     const list = saved.products || defaultProducts;
-    list.push({ id: Date.now(), name:"Novo item", desc:"Descrição", price:0, img:"https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=600&q=80", cat:"Principal" });
+    list.push({ id: Date.now(), name:"Novo item", desc:"Descrição", price:0, img:"", cat:"principais" });
     saved.products = list;
     localStorage.setItem('deliveryData', JSON.stringify(saved));
     renderItems(list);

@@ -179,7 +179,7 @@
 
 <div id="editArea" style="max-width:720px;margin:0 auto;padding:20px;background:#fff;border-top:2px solid var(--accent);display:none;">
   <h2 style="font-family:'Playfair Display',serif;font-size:1.2rem;">Área do Dono — Editar direto</h2>
-  <p style="font-size:0.85rem;color:var(--sub);margin-bottom:10px;">Digite o nome do arquivo de foto (ex: <b>dog_01.jpg</b>) e clique em Salvar. Copie a foto para esta pasta antes.</p>
+  <p style="font-size:0.85rem;color:var(--sub);margin-bottom:10px;">Para trocar a foto: use o botão <b>Escolher arquivo</b> ao lado do produto (a imagem já fica salva). Ou digite o nome de um arquivo copiado pra esta pasta (ex: <b>cachorro_simples.png</b>).</p>
   <div id="editInputs"></div>
   <button onclick="saveEdits()" style="margin-top:10px;width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ef4444);color:#fff;font-weight:800;cursor:pointer;">Salvar no site</button>
   <button onclick="toggleEdit()" style="margin-top:8px;width:100%;padding:10px;border:none;background:#f0f0f0;color:var(--text);border-radius:10px;cursor:pointer;font-weight:600;">Fechar edição</button>
@@ -213,7 +213,7 @@
       {id:109,name:"Porção de Fígado com Jiló Grande",desc:"Acompanha cebola.",price:39.0,img:"porcao_figado.png"},
     ],
     'bebidas': [
-      {id:110,name:"Refrigerante 350ml",desc:"Coca, Guaraná, Fanta — escolha na entrega.",price:7.0,img:"dog_04.jpg"},
+      {id:110,name:"Refrigerante 350ml",desc:"Coca, Guaraná, Fanta — escolha na entrega.",price:7.0,img:""},
     ],
   };
 
@@ -221,6 +221,13 @@
   let cart = {};
   let storeCfg = {name:"Lanche da Dani", phone:"5531971681724", pix:""};
   let currentCat = 'todos';
+
+  // Descarta dados salvos de versões antigas para o cardápio/fotos novos valerem
+  const DATA_VERSION = 'delivery_v2';
+  if (localStorage.getItem('__delivery_ver') !== DATA_VERSION) {
+    localStorage.removeItem('deliveryData');
+    localStorage.setItem('__delivery_ver', DATA_VERSION);
+  }
 
   function loadData() {
     try {
@@ -233,14 +240,10 @@
         if (d.products) {
           if (d.products.principais) products = d.products;
           else if (Array.isArray(d.products)) {
-            // converte array do admin para objeto
-            products = {principais:[],acompana:[],bebidas:[]};
+            const keys = {'principais':'principais','acompanha':'acompanha','bebidas':'bebidas','Principal':'principais','Acompanhamento':'acompanha','Bebida':'bebidas'};
+            products = {principais:[],acompanha:[],bebidas:[]};
             d.products.forEach(p=>{
-              const n = (p.name||'').toLowerCase();
-              if (n.includes('dog')) products.principais.push(p);
-              else if (n.includes('batata')||n.includes('cheddar')) products.acompanha.push(p);
-              else if (n.includes('refrigerante')||n.includes('suco')) products.bebidas.push(p);
-              else products.principais.push(p);
+              products[keys[p.cat]||'principais'].push(p);
             });
           }
         }
@@ -256,7 +259,7 @@
     if (!list.length) { el.innerHTML='<div style="padding:20px;text-align:center;color:var(--sub)">Nenhum item cadastrado.</div>'; return; }
     el.innerHTML = list.map(p => `
       <article class="item">
-        <img src="${p.img}" alt="${p.name}" loading="lazy" />
+        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'" />
         <div class="info">
           <h3>${p.name}</h3>
           <p>${p.desc}</p>
@@ -295,7 +298,7 @@
     else itemsEl.innerHTML = entries.map(([id,qty])=>{
       const p=all.find(x=>x.id==id);
       return `<div class="cart-item">
-        <img src="${p.img}" alt="${p.name}" />
+        <img src="${p.img}" alt="${p.name}" onerror="this.style.display='none'" />
         <div class="info"><h4>${p.name}</h4><div class="qty">R$ ${Number(p.price).toFixed(2).replace('.',',')} x ${qty}</div></div>
         <div style="display:flex;gap:6px;align-items:center;">
           <button onclick="changeQty(${p.id},-1)" style="width:26px;height:26px;border-radius:50%;border:1px solid #e4e4e7;background:#fff;font-weight:700;cursor:pointer;">−</button>
@@ -369,20 +372,29 @@
   function toggleEdit() { document.getElementById('editArea').style.display = document.getElementById('editArea').style.display === 'none' ? 'block' : 'none'; buildEditInputs(); }
   function buildEditInputs() {
     const all = [...(products.principais||[]), ...(products.acompanha||[]), ...(products.bebidas||[])];
-    document.getElementById('editInputs').innerHTML = all.map(p => `
+    document.getElementById('editInputs').innerHTML = all.map(p => {
+      const isData = (p.img||'').startsWith('data:');
+      return `
       <div style="background:#f8fafc;border:1px solid #e4e4e7;border-radius:10px;padding:10px;margin-bottom:8px;">
         <strong>${p.name}</strong> — R$ ${Number(p.price).toFixed(2)}<br>
-        <input id="edit_img_${p.id}" type="text" value="${p.img}" style="width:70%;padding:6px;border-radius:6px;border:1px solid #ccc;margin-top:4px;font-size:0.85rem;" placeholder="nome-do-arquivo.jpg" />
+        <input id="edit_img_${p.id}" type="text" value="${isData ? (p.imgName||'imagem carregada no navegador') : p.img}" style="width:70%;padding:6px;border-radius:6px;border:1px solid #ccc;margin-top:4px;font-size:0.85rem;" placeholder="nome-do-arquivo.jpg" />
+        <input type="hidden" id="edit_data_${p.id}" value="${isData ? p.img : ''}" />
         <input type="file" accept="image/*" style="width:28%;padding:4px;font-size:0.8rem;" onchange="handleFile(this,${p.id})" />
-        <img id="preview_${p.id}" src="${p.img}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;margin-top:6px;display:${p.img?'block':'none'};" />
-      </div>
-    `).join('');
+        <img id="preview_${p.id}" src="${p.img||''}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;margin-top:6px;display:${p.img?'block':'none'};" onerror="this.style.display='none'" />
+      </div>`;
+    }).join('');
   }
   function saveEdits() {
     const all = [...(products.principais||[]), ...(products.acompanha||[]), ...(products.bebidas||[])];
     all.forEach(p => {
+      const dataEl = document.getElementById('edit_data_'+p.id);
       const input = document.getElementById('edit_img_'+p.id);
-      if (input) { p.img = input.value.trim() || p.img; }
+      if (dataEl && dataEl.value) {
+        p.img = dataEl.value;
+        p.imgName = input ? input.value.trim() : '';
+      } else if (input && input.value.trim()) {
+        p.img = input.value.trim();
+      }
     });
     const data = JSON.parse(localStorage.getItem('deliveryData')||'{}');
     data.products = products;
@@ -396,13 +408,26 @@
     const file = input.files[0];
     const reader = new FileReader();
     reader.onload = function(e) {
-      document.getElementById('edit_img_'+id).value = file.name;
-      const preview = document.getElementById('preview_'+id);
-      if (preview) { preview.src = e.target.result; preview.style.display = 'block'; }
-      // Atualiza visual imediatamente sem salvar no servidor
       const all = [...(products.principais||[]), ...(products.acompanha||[]), ...(products.bebidas||[])];
       const item = all.find(x => x.id === id);
-      if (item) item.img = file.name;
+      if (!item) return;
+      const dataUrl = e.target.result;
+      item.img = dataUrl;
+      item.imgName = file.name;
+      const nameEl = document.getElementById('edit_img_'+id);
+      if (nameEl) nameEl.value = file.name;
+      const dataEl = document.getElementById('edit_data_'+id);
+      if (dataEl) dataEl.value = dataUrl;
+      const preview = document.getElementById('preview_'+id);
+      if (preview) { preview.src = dataUrl; preview.style.display = 'block'; }
+      const data = JSON.parse(localStorage.getItem('deliveryData')||'{}');
+      data.products = products;
+      try {
+        localStorage.setItem('deliveryData', JSON.stringify(data));
+      } catch(err) {
+        alert('Foto muito grande para salvar no navegador. Reduza/tire uma foto menor e tente de novo.');
+        return;
+      }
       renderList(); updateUI();
     };
     reader.readAsDataURL(file);
